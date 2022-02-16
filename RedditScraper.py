@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 SUBREDDIT_NAME = "memes"
 
 
-def scrape_subreddit(subreddit):
+def scrape_subreddit(subreddit_name):
     load_dotenv()
     id = os.getenv("reddit_scrape_client_id")
     agent = os.getenv("reddit_scrape_user_agent")
@@ -18,7 +18,7 @@ def scrape_subreddit(subreddit):
         client_secret=secret,
     )
 
-    subreddit = reddit_reader.subreddit(SUBREDDIT_NAME)
+    subreddit = reddit_reader.subreddit(subreddit_name)
 
     urls = []
     for submission in subreddit.hot(limit=5):
