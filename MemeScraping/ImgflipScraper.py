@@ -30,7 +30,8 @@ from bs4 import BeautifulSoup
 def info_from_file(filename):
     with open(filename) as f:
         data = json.load(f)
-        return get_JSON_info(data)
+        urls, texts = get_JSON_info(data)
+        return urls, texts
 
 
 def get_JSON_info(json):
