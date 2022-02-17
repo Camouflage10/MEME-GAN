@@ -3,8 +3,6 @@ import praw
 import ImageDownloader
 from dotenv import load_dotenv
 
-SUBREDDIT_NAME = "AdviceAnimals"
-
 
 def scrape_subreddit(subreddit_name):
     load_dotenv()
@@ -36,7 +34,9 @@ def scrape_subreddit(subreddit_name):
 
 
 def main():
-    scrape_subreddit(SUBREDDIT_NAME)
+    SUBREDDIT = "AdviceAnimals"
+    scrape_subreddit(SUBREDDIT)
+    # scrape_subreddit(input("Subreddit to scrape: ")) # User input
 
 
 if __name__ == "__main__":
