@@ -48,6 +48,11 @@ def get_JSON_info(json):
     return urls, texts
 
 
+# Scrapes a meme template from Imgflip
+# source: link to meme template
+# from_page: which page to start on
+# pages: number of pages to scrape
+# delay: delay between page loads
 def scrape(source, from_page, pages, delay):
     fetched_memes = []
 
@@ -84,12 +89,12 @@ def scrape(source, from_page, pages, delay):
 
         time.sleep(delay)
 
-        print(f"Fetched: {len(fetched_memes)} memes")
+    print(f"Fetched: {len(fetched_memes)} memes")
 
-        with open(output_filename, "w") as out_file:
-            data = {"name": meme_name, "memes": fetched_memes}
+    with open(output_filename, "w") as out_file:
+        data = {"name": meme_name, "memes": fetched_memes}
 
-            out_file.write(json.dumps(data))
+        out_file.write(json.dumps(data))
 
 
 def main():
