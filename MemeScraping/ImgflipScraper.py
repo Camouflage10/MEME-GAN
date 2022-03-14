@@ -7,7 +7,7 @@ This script scrapes memes from a category on imgflip.com
 (e.g. https://imgflip.com/meme/Bird-Box). As an example,
 to scrape the first 10 pages of Bird Box memes run:
 
-python imgflip_scraper.py --source https://imgflip.com/meme/Bird-Box --pages 10
+python ImgflipScraper.py --source https://imgflip.com/meme/Bird-Box --pages 10
 
 The program outputs the memes as a JSON file with the following format:
 
@@ -28,6 +28,9 @@ from bs4 import BeautifulSoup
 
 
 def info_from_file(filename):
+    """
+    Returns urls, texts
+    """
     with open(filename) as f:
         data = json.load(f)
         urls, texts = get_JSON_info(data)
@@ -57,11 +60,19 @@ def scrape(source, from_page, pages, delay):
     fetched_memes = []
 
     meme_name = source.split("/")[-1].replace("-", " ")
-    output_filename = source.split("/")[-1].replace("-", "_").lower() + ".json"
+    output_filename = (
+        source.split("/")[-1].split("?")[0].replace("-", "_").lower() + ".json"
+    )
+
+    # allows you to give a page with pre-existing flags (ex. sort)
+    if "?" in source:
+        source += "&"
+    else:
+        source += "?"
 
     for i in range(from_page, pages + 1):
         print(f"Processing page {i}")
-        response = requests.get(f"{source}?page={i}")
+        response = requests.get(f"{source}page={i}")
         body = BeautifulSoup(response.text, "html.parser")
 
         if response.status_code != 200:
@@ -92,6 +103,7 @@ def scrape(source, from_page, pages, delay):
     print(f"Fetched: {len(fetched_memes)} memes")
 
     with open(output_filename, "w") as out_file:
+        print("Outputting to file:", output_filename)
         data = {"name": meme_name, "memes": fetched_memes}
 
         out_file.write(json.dumps(data))
