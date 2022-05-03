@@ -63,10 +63,12 @@ def preprocess(filename):
     # Export all data to folder
     # -----------------------------
 
-    output_folder = "_".join(meme_name.split())
+    output_folder = "Processed_Data" + "/"
+    output_folder += "_".join(meme_name.split())
     if not os.path.isdir(output_folder):
-        os.mkdir(output_folder)
+        os.makedirs(output_folder)
 
+    print("Saving files to", output_folder)
     scaled.save(output_folder + "/" + "image.jpg")
     with open(output_folder + "/" + "data.json", "w") as f:
         json.dump(cleaned_data, f)
