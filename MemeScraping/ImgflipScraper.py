@@ -27,39 +27,19 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def info_from_file(filename):
-    """
-    Returns urls, texts
-    """
-    with open(filename) as f:
-        data = json.load(f)
-        urls, texts = get_JSON_info(data)
-        return urls, texts
-
-
-def get_JSON_info(json):
-    urls = []
-    texts = []
-    for meme in json["memes"]:
-        # Sometimes the JSON will contain memes with no text
-        # In this instance it will give a text of: "image tagged in [categories]"
-        # We do not include these memes in our lists
-        if "image tagged in" not in meme["text"]:
-            urls.append(meme["url"])
-            texts.append(meme["text"])
-
-    return urls, texts
-
-
-# Scrapes a meme template from Imgflip
-# source: link to meme template
-# from_page: which page to start on
-# pages: number of pages to scrape
-# delay: delay between page loads
 def scrape(source, from_page, pages, delay):
+    """
+    Scrapes a meme template from Imgflip
+    - source: link to meme template
+    - from_page: which page to start on
+    - pages: number of pages to scrape
+    - delay: delay between page loads
+    """
     fetched_memes = []
 
-    meme_name = source.split("/")[-1].replace("-", " ")
+    template_name = source.split("/")[-1].split("?")[0]
+    meme_name = template_name.replace("-", " ")
+    template_url = f"https://imgflip.com/s/meme/{template_name}"
     output_filename = (
         source.split("/")[-1].split("?")[0].replace("-", "_").lower() + ".json"
     )
@@ -104,7 +84,7 @@ def scrape(source, from_page, pages, delay):
 
     with open(output_filename, "w") as out_file:
         print("Outputting to file:", output_filename)
-        data = {"name": meme_name, "memes": fetched_memes}
+        data = {"name": meme_name, "template": template_url, "memes": fetched_memes}
 
         out_file.write(json.dumps(data))
 
@@ -125,7 +105,7 @@ def main():
     )
     parser.add_argument(
         "--pages",
-        required=True,
+        default=5,
         help="Maximum page number to be scraped",
         type=int,
     )
@@ -137,7 +117,6 @@ def main():
     )
 
     args = parser.parse_args()
-
     source = args.source
     from_page = args.from_page
     pages = args.pages
