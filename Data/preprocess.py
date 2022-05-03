@@ -1,11 +1,13 @@
+# Takes a scraped json file and preprocesses it for AI use
+# Use in commandline:
+# preprocess.py data.json
+
 import argparse
 import os
 import io
 import json
 import requests
 from PIL import Image
-
-FILENAME = "./scraped_json/drake_hotline_bling.json"
 
 
 def preprocess(filename):
