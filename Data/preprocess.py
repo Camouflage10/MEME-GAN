@@ -24,7 +24,6 @@ def preprocess(filename):
         template_url = data["template"]
         meme_data = [(meme["url"], meme["text"]) for meme in data["memes"]]
     print("Total memes:", len(meme_data))
-    print(meme_data[:5])
 
     # -------------
     # Clean data
@@ -43,7 +42,7 @@ def preprocess(filename):
             continue
         cleaned_data.append((url, text))
 
-    print("Removed", len(meme_data) - len(cleaned_data), "memes")
+    print("Cleaned", len(meme_data) - len(cleaned_data), "memes")
     print("Memes after cleaning:", len(cleaned_data))
 
     # -----------------------------
@@ -65,14 +64,14 @@ def preprocess(filename):
     # Export all data to folder
     # -----------------------------
 
-    output_folder = "Processed_Data" + "/"
-    output_folder += "_".join(meme_name.split())
-    if not os.path.isdir(output_folder):
-        os.makedirs(output_folder)
+    output_dir = "Processed_Data" + "/"
+    output_dir += "_".join(meme_name.split())
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
 
-    print("Saving files to", output_folder)
-    scaled.save(output_folder + "/" + "image.jpg")
-    with open(output_folder + "/" + "data.json", "w") as f:
+    print("Saving files to directory", output_dir)
+    scaled.save(output_dir + "/" + "image.jpg")
+    with open(output_dir + "/" + "data.json", "w") as f:
         json.dump(cleaned_data, f)
 
 
