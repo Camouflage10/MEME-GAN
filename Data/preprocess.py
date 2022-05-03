@@ -10,6 +10,15 @@ import requests
 from PIL import Image
 
 
+def download_and_scale(download_url):
+    SCALE = (100, 100)
+    r = requests.get(download_url, stream=True)
+    img_bytes = r.raw.read()
+    img = Image.open(io.BytesIO(img_bytes))
+    scaled = img.resize(SCALE)
+    return scaled
+
+
 def preprocess(filename):
     # -------------
     # Load data
@@ -46,33 +55,38 @@ def preprocess(filename):
     print("Memes after cleaning:", len(cleaned_data))
 
     # -----------------------------
-    # Download and scale template
-    # -----------------------------
-
-    # Download template
-    print("Getting template from", template_url)
-    r = requests.get(template_url, stream=True)
-    img_bytes = r.raw.read()
-
-    # Scale to size
-    image = Image.open(io.BytesIO(img_bytes))
-    print("Image size before:", image.size)
-    scaled = image.resize((100, 100))
-    print("Image size after:", scaled.size)
-
-    # -----------------------------
     # Export all data to folder
     # -----------------------------
 
+    # Make directory
     output_dir = "Processed_Data" + "/"
     output_dir += "_".join(meme_name.split())
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
-    print("Saving files to directory", output_dir)
-    scaled.save(output_dir + "/" + "image.jpg")
-    with open(output_dir + "/" + "data.json", "w") as f:
-        json.dump(cleaned_data, f)
+    # Download template
+    print("Getting template from", template_url)
+    template = download_and_scale(template_url)
+    template.save(output_dir + "/template.png")
+
+    # Split urls and texts
+    urls = [url for url, _ in cleaned_data]
+    texts = [text for _, text in cleaned_data]
+
+    # Save text
+    print("Saving text to text.json")
+    with open(output_dir + "/text.json", "w") as f:
+        json.dump(texts, f)
+
+    # Download images
+    img_dir = output_dir + "/imgs"
+    print("Downloading", len(urls), "images to /imgs")
+    if not os.path.isdir(img_dir):
+        os.makedirs(img_dir)
+    for i, url in enumerate(urls):
+        print(f"\rImage: {i} / {len(urls)}", end="")
+        img = download_and_scale("https://" + url)
+        img.save(img_dir + "/" + f"{i}" + ".png")
 
 
 if __name__ == "__main__":
