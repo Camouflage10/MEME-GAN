@@ -10,7 +10,7 @@ import requests
 from PIL import Image
 
 
-def download_and_scale(download_url):
+def download_and_scale_img(download_url):
     SCALE = (100, 100)
     r = requests.get(download_url, stream=True)
     img_bytes = r.raw.read()
@@ -66,7 +66,7 @@ def preprocess(filename):
 
     # Download template
     print("Getting template from", template_url)
-    template = download_and_scale(template_url)
+    template = download_and_scale_img(template_url)
     template.save(output_dir + "/template.png")
 
     # Split urls and texts
@@ -85,7 +85,7 @@ def preprocess(filename):
         os.makedirs(img_dir)
     for i, url in enumerate(urls):
         print(f"\rImage: {i} / {len(urls)}", end="")
-        img = download_and_scale("https://" + url)
+        img = download_and_scale_img("https://" + url)
         img.save(img_dir + "/" + f"{i}" + ".png")
 
 
