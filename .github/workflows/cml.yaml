@@ -1,0 +1,27 @@
+name: meme-gan
+on: [push]
+  jobs:
+    run:
+      run-on: [ubuntu-latest]
+      container: docker://dvcorg/cml-py3:latest\
+      steps:
+        - uses: checkout
+        - name: cml_run
+          env:
+            repo_token: ${{secrets.GITHUB_TOKEN}}
+          run: |
+            pip install -r require.txt
+            pip install ipynb-py-convert
+            ipynb-py-convert img-gan.ipynb img-gan.py
+            ipynb-py-convert txt-gan.ipynb txt-gan.py
+            python img-gan.py
+            python txt-gan.py
+            python memeify.py
+            python twitter-bot.py
+            
+            #echo 'img and text' > repot.md
+            #cat text.txt >> report.md
+            #cml-publish img.png --md >> report.md
+            
+            #echo 'meme' >> report.md
+            #cml-publish meme.png --md >> report.md
