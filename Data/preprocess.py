@@ -9,9 +9,10 @@ import json
 import requests
 from PIL import Image
 
+SCALE = (100, 100)
+
 
 def download_and_scale_img(download_url):
-    SCALE = (100, 100)
     r = requests.get(download_url, stream=True)
     img_bytes = r.raw.read()
     img = Image.open(io.BytesIO(img_bytes))
