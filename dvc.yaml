@@ -1,3 +1,57 @@
 stages:
-  change:
-    cmd: echo done
+  nb-to-py:
+    cmd: bash convert.sh
+    deps:
+      #-list all notebooks
+    outs:
+      #-list all notebooks as .py
+  scrape-data:
+    cmd: python scrape.py
+    deps:
+      - scrape.py
+    outs:
+      - data
+  preprocess-data:
+    cmd: python preprocess.py
+    deps:
+      - preprocess.py
+      - data
+    outs:
+      - preprocesed-data
+  imgGAN:
+    cmd: python imgGAN.py
+    deps:
+      - imgGAN.py
+      - preprocesed-data
+    outs:
+      - imgGAN-out
+      - img-metrics.txt
+      - imgGan.png
+      - imgGen.pkl
+      - imgDesc.pkl
+  textGAN:
+    cmd: python textGAN.py
+    deps:
+      - textGAN.py
+      - imgGan-out
+    outs:
+      - textGAN-out
+      - text-metrics.txt
+      - textGan.png
+      - textGen.pkl
+      - textDesc.pkl
+  memeify:
+    cmd: python memeify.py
+    deps:
+      - memeify.py
+      - imgGan-out
+      - textGan-out
+    outs:
+      - memes
+  tweet-meme:
+    cmd: python twitterBot.py
+    deps:
+      - memes
+      - twitterBot.py
+    outs:
+      - meme.png
