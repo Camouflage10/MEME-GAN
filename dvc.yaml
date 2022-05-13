@@ -1,0 +1,3 @@
+stages:
+  change:
+    cmd: echo done
