@@ -1,27 +1,30 @@
 name: meme-gan
 on: [push]
-  jobs:
-    run:
-      run-on: [ubuntu-latest]
-      container: docker://dvcorg/cml-py3:latest\
-      steps:
-        - uses: checkout
-        - name: cml_run
-          env:
-            repo_token: ${{secrets.GITHUB_TOKEN}}
-          run: |
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    container: docker://iterativeai/cml:0-dvc2-base1-gpu
+    steps:
+      - uses: actions/checkout@v2
+      - name: run pipe
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            git config --global --add safe.directory /__w/MEME-GAN/MEME-GAN
             pip install -r require.txt
-            pip install ipynb-py-convert
-            ipynb-py-convert img-gan.ipynb img-gan.py
-            ipynb-py-convert txt-gan.ipynb txt-gan.py
-            python img-gan.py
-            python txt-gan.py
-            python memeify.py
-            python twitter-bot.py
+            dvc repro
             
-            #echo 'img and text' > repot.md
-            #cat text.txt >> report.md
-            #cml-publish img.png --md >> report.md
+            echo "## img gan" > report.md
+            cat img-metrics.txt >> report.md
+            cml publish imgGAN.png --md >> report.md
             
-            #echo 'meme' >> report.md
-            #cml-publish meme.png --md >> report.md
+            echo "## text gan" > report.md
+            cat text-metrics.txt >> report.md
+            cml publish textGAN.png --md >> report.md
+            
+            echo "## memeify" >> report.md
+            cml publish memes/meme1.png --md >> report.md
+            
+            cml send-comment report.md
+            
